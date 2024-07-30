@@ -4,6 +4,8 @@
  */
 package br.edu.ifsul.cc.lpoo.studiodanca.lpoo_studiodanca.view;
 
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author malek
@@ -39,7 +41,12 @@ public class TelaModalidades extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(lstModalidades);
 
-        btnNovo.setText("jButton1");
+        btnNovo.setText("Nova Modalidade");
+        btnNovo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnNovoActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -50,7 +57,7 @@ public class TelaModalidades extends javax.swing.JFrame {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(40, 40, 40)
                 .addComponent(btnNovo)
-                .addContainerGap(98, Short.MAX_VALUE))
+                .addContainerGap(49, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -66,6 +73,11 @@ public class TelaModalidades extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNovoActionPerformed
+        // TODO add your handling code here:
+        JOptionPane.showInputDialog(rootPane, "Informe o nome da modalidade:", "Nova modalidade");
+    }//GEN-LAST:event_btnNovoActionPerformed
 
     /**
      * @param args the command line arguments
