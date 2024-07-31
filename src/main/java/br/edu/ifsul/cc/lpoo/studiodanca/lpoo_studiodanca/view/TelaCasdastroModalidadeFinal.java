@@ -14,16 +14,16 @@ import javax.swing.JOptionPane;
  *
  * @author malek
  */
-public class TelaModalidades extends javax.swing.JFrame {
+public class TelaCasdastroModalidadeFinal extends javax.swing.JFrame {
 
     DefaultListModel mascaraItemLista = new DefaultListModel<>();
+    PersistenciaJPA jpa = new PersistenciaJPA();
 
     /**
      * Creates new form TelaModalidades
      */
-    public TelaModalidades() {
+    public TelaCasdastroModalidadeFinal() {
         initComponents();
-        lstModalidades.clearSelection();
         atualizaLista();
     }
 
@@ -37,20 +37,16 @@ public class TelaModalidades extends javax.swing.JFrame {
     private void atualizaLista() {
         mascaraItemLista.removeAllElements();
 
-        PersistenciaJPA jpa = new PersistenciaJPA();
+        jpa = new PersistenciaJPA();
+
+        lstModalidades.clearSelection();
 
         List<Modalidade> listaModalidades = jpa.getModalidades();
         // popular esse modelo de lista
         for (Modalidade modelo : listaModalidades) {
-            mascaraItemLista.addElement(modelo.getDescricao());
+            mascaraItemLista.addElement(modelo);
         }
 
-        //mascaraItemLista.addAll(listaModalidades);
-        //for(Modalidade modelo : listaModalidades)
-        //{
-        //    System.out.println("modelo" + modelo.getDescricao() + "  id:"+ modelo.getId());
-        //}
-        
         lstModalidades.setModel(mascaraItemLista);
     }
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -60,14 +56,12 @@ public class TelaModalidades extends javax.swing.JFrame {
         lstModalidades = new javax.swing.JList<>();
         btnNovo = new javax.swing.JButton();
         lblModalidades = new javax.swing.JLabel();
+        btnEditar = new javax.swing.JButton();
+        btnRemover = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        lstModalidades.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
+        lstModalidades.setToolTipText("");
         jScrollPane1.setViewportView(lstModalidades);
 
         btnNovo.setText("Nova Modalidade");
@@ -78,6 +72,20 @@ public class TelaModalidades extends javax.swing.JFrame {
         });
 
         lblModalidades.setText("Modalidades");
+
+        btnEditar.setText("Editar");
+        btnEditar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditarActionPerformed(evt);
+            }
+        });
+
+        btnRemover.setText("Remover");
+        btnRemover.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRemoverActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -90,15 +98,18 @@ public class TelaModalidades extends javax.swing.JFrame {
                         .addComponent(lblModalidades)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 258, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1)
                         .addGap(18, 18, 18)
-                        .addComponent(btnNovo)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(btnNovo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnEditar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnRemover, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(38, 38, 38))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(60, Short.MAX_VALUE)
+                .addContainerGap(76, Short.MAX_VALUE)
                 .addComponent(lblModalidades)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -106,7 +117,11 @@ public class TelaModalidades extends javax.swing.JFrame {
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(21, 21, 21)
-                        .addComponent(btnNovo)))
+                        .addComponent(btnNovo)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnEditar)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnRemover)))
                 .addGap(72, 72, 72))
         );
 
@@ -114,26 +129,46 @@ public class TelaModalidades extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNovoActionPerformed
+        
+    }//GEN-LAST:event_btnNovoActionPerformed
+
+    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
         // TODO add your handling code here:
-        String modDesc = JOptionPane.showInputDialog(rootPane, "Informe o nome da modalidade:", "Nova modalidade");
+        //
+        Modalidade mEdit = lstModalidades.getSelectedValue();
 
-        Modalidade mod = new Modalidade();
+        String novoNome = JOptionPane.showInputDialog(rootPane, "Informe o novo nome para editar: ", mEdit.getDescricao());
 
-        mod.setDescricao(modDesc);
-        PersistenciaJPA jpa = new PersistenciaJPA();
+        jpa = new PersistenciaJPA();
 
-        if (jpa.conexaoAberta()) {
-            try {
-                jpa.persist(mod);
-            } catch (Exception ex) {
-                System.out.println("não foi possível adicionar ao banco" + ex.getMessage());
-            } finally {
-                jpa.fecharConexao();
-            }
+        try {
+            mEdit = (Modalidade) jpa.find(Modalidade.class, mEdit.getId());
+            mEdit.setDescricao(novoNome);
+            jpa.conexaoAberta();
+            jpa.persist(mEdit);
+            jpa.fecharConexao();
+            atualizaLista();
+        } catch (Exception e) {
+            System.out.println("Erro" + e.getMessage());
         }
 
-        atualizaLista();
-    }//GEN-LAST:event_btnNovoActionPerformed
+    }//GEN-LAST:event_btnEditarActionPerformed
+
+    private void btnRemoverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoverActionPerformed
+        // TODO add your handling code here:
+        Modalidade mRemove = lstModalidades.getSelectedValue();
+
+        jpa = new PersistenciaJPA();
+
+        try {
+            jpa.conexaoAberta();
+            jpa.remover(mRemove);
+            jpa.fecharConexao();
+            atualizaLista();
+        } catch (Exception e) {
+            System.out.println("Erro" + e.getMessage());
+        }
+    }//GEN-LAST:event_btnRemoverActionPerformed
 
     /**
      * @param args the command line arguments
@@ -152,28 +187,33 @@ public class TelaModalidades extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(TelaModalidades.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(TelaCasdastroModalidadeFinal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(TelaModalidades.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(TelaCasdastroModalidadeFinal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(TelaModalidades.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(TelaCasdastroModalidadeFinal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(TelaModalidades.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(TelaCasdastroModalidadeFinal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new TelaModalidades().setVisible(true);
+                new TelaCasdastroModalidadeFinal().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnEditar;
     private javax.swing.JButton btnNovo;
+    private javax.swing.JButton btnRemover;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblModalidades;
-    private javax.swing.JList<String> lstModalidades;
+    private javax.swing.JList<Modalidade> lstModalidades;
     // End of variables declaration//GEN-END:variables
 }

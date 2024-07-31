@@ -5,17 +5,17 @@
 package br.edu.ifsul.cc.lpoo.studiodanca.lpoo_studiodanca.dao;
 
 import br.edu.ifsul.cc.lpoo.studiodanca.lpoo_studiodanca.model.Modalidade;
+import br.edu.ifsul.cc.lpoo.studiodanca.lpoo_studiodanca.model.Professor;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-
 /**
  *
  * @author vanessalagomachado
  */
-public class PersistenciaJPA implements InterfacePersistencia{
+public class PersistenciaJPA implements InterfacePersistencia {
 
     EntityManager entity;
     EntityManagerFactory factory;
@@ -24,18 +24,21 @@ public class PersistenciaJPA implements InterfacePersistencia{
         factory = Persistence.createEntityManagerFactory("pu_studio_danca");
         entity = factory.createEntityManager();
     }
-    
-    
-    
-    
+
     @Override
     public Boolean conexaoAberta() {
+        if (entity == null || !entity.isOpen()) {
+            entity = factory.createEntityManager();
+        }
         return entity.isOpen();
     }
 
     @Override
     public void fecharConexao() {
         entity.close();
+        if (entity != null && entity.isOpen()) {
+            entity.close();
+        }
     }
 
     @Override
@@ -56,22 +59,25 @@ public class PersistenciaJPA implements InterfacePersistencia{
         entity.remove(o);
         entity.getTransaction().commit();
     }
-    
-    public List<Modalidade> getModalidades(){
-    //String jpql = "SELECT descricao FROM Modalidade";  // Nome da entidade 'Modalidade'
-    //Query<Modalidade> query = entity.createQuery(jpql);
-    //return query.getResultList();
-    
+
+    public List<Modalidade> getModalidades() throws Exception {
+        //String jpql = "SELECT descricao FROM Modalidade";  // Nome da entidade 'Modalidade'
+        //Query<Modalidade> query = entity.createQuery(jpql);
+        //return query.getResultList();
+
         List<Modalidade> modalidades = null;
-        
-        try{
-            modalidades = entity.createQuery("select m from Modalidade m", Modalidade.class).getResultList();
-        }catch(Exception e)
-        {
-            System.out.println("Err");
-        }
-        
+
+        modalidades = entity.createQuery("select m from Modalidade m", Modalidade.class).getResultList();
+
         return modalidades;
     }
-    
+
+    public List<Professor> getProfessores() throws Exception {
+
+        List<Professor> professores = null;
+
+        professores = entity.createQuery("select m from Modalidade m", Professor.class).getResultList();
+
+        return professores;
+    }
 }
