@@ -4,9 +4,12 @@
  */
 package br.edu.ifsul.cc.lpoo.studiodanca.lpoo_studiodanca.dao;
 
+import br.edu.ifsul.cc.lpoo.studiodanca.lpoo_studiodanca.model.Modalidade;
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+
 
 /**
  *
@@ -52,6 +55,23 @@ public class PersistenciaJPA implements InterfacePersistencia{
         entity.getTransaction().begin();
         entity.remove(o);
         entity.getTransaction().commit();
+    }
+    
+    public List<Modalidade> getModalidades(){
+    //String jpql = "SELECT descricao FROM Modalidade";  // Nome da entidade 'Modalidade'
+    //Query<Modalidade> query = entity.createQuery(jpql);
+    //return query.getResultList();
+    
+        List<Modalidade> modalidades = null;
+        
+        try{
+            modalidades = entity.createQuery("select m from Modalidade m", Modalidade.class).getResultList();
+        }catch(Exception e)
+        {
+            System.out.println("Err");
+        }
+        
+        return modalidades;
     }
     
 }
