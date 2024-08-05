@@ -11,6 +11,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+
 /**
  *
  * @author vanessalagomachado
@@ -52,12 +53,34 @@ public class PersistenciaJPA implements InterfacePersistencia {
         entity.persist(o);
         entity.getTransaction().commit();
     }
+    
+    /*
+    Todos os métodos agora chamam getEntityManager() para garantir que o EntityManager esteja sempre aberto e pronto para uso.
+     */
+    public EntityManager getEntityManager() {
+        if (entity == null || !entity.isOpen()) {
+            entity = factory.createEntityManager();
+        }
+        return entity;
+    }
 
     @Override
     public void remover(Object o) throws Exception {
-        entity.getTransaction().begin();
-        entity.remove(o);
-        entity.getTransaction().commit();
+         //No método remover, antes de chamar remove, usamos merge se o objeto não estiver gerenciado.
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            if (!em.contains(o)) {
+                o = em.merge(o); // Anexa o objeto ao contexto de persistência, se necessário
+            }
+            em.remove(o);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw e;
+        }
     }
 
     public List<Modalidade> getModalidades() throws Exception {
@@ -76,7 +99,7 @@ public class PersistenciaJPA implements InterfacePersistencia {
 
         List<Professor> professores = null;
 
-        professores = entity.createQuery("select m from Modalidade m", Professor.class).getResultList();
+        professores = entity.createQuery("select p from Professor p", Professor.class).getResultList();
 
         return professores;
     }

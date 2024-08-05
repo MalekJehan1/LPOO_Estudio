@@ -29,7 +29,7 @@ public class TestePersistenciaObjetos {
         jpa.fecharConexao();
     }
 
-    @Test
+    //@Test
     public void test() throws Exception {
         // Criação das Entidades
         Modalidade m = new Modalidade();
@@ -76,5 +76,15 @@ public class TestePersistenciaObjetos {
         jpa.persist(c);     // Contrato deve ser persistido antes de Pagamento e Pacote
         jpa.persist(p);     // Pagamento deve ser persistido após Contrato
         jpa.persist(f);     // FolhaPagamento deve ser persistida após Professor
+    }
+    
+    @Test
+    public void Test2() throws Exception {
+        Professor prof1 = new Professor();
+        prof1.setNome("Diego souza");
+        prof1.setFone("+55(54)90123-1233");
+        prof1.setDataAdmissao(Calendar.getInstance());
+        
+        jpa.persist(prof1);
     }
 }

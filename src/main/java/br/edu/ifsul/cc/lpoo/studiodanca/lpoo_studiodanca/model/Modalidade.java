@@ -50,6 +50,16 @@ public class Modalidade implements Serializable {
     public void setDescricao(String descricao) {
         this.descricao = descricao;
     }
+
+    public Professor getProfessor() {
+        return professor;
+    }
+
+    public void setProfessor(Professor professor) {
+        this.professor = professor;
+    }
+    
+   
     
     @Override
     public String toString()

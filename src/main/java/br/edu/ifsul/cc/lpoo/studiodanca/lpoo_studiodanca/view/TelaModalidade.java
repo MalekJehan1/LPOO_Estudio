@@ -14,7 +14,7 @@ import javax.swing.JOptionPane;
  *
  * @author malek
  */
-public class TelaCasdastroModalidadeFinal extends javax.swing.JFrame {
+public class TelaModalidade extends javax.swing.JFrame {
 
     DefaultListModel mascaraItemLista = new DefaultListModel<>();
     PersistenciaJPA jpa = new PersistenciaJPA();
@@ -22,7 +22,7 @@ public class TelaCasdastroModalidadeFinal extends javax.swing.JFrame {
     /**
      * Creates new form TelaModalidades
      */
-    public TelaCasdastroModalidadeFinal() {
+    public TelaModalidade() {
         initComponents();
         atualizaLista();
     }
@@ -41,13 +41,15 @@ public class TelaCasdastroModalidadeFinal extends javax.swing.JFrame {
 
         lstModalidades.clearSelection();
 
-        List<Modalidade> listaModalidades = jpa.getModalidades();
-        // popular esse modelo de lista
-        for (Modalidade modelo : listaModalidades) {
-            mascaraItemLista.addElement(modelo);
+        try {
+            List<Modalidade> listaModalidades = jpa.getModalidades();
+            for (Modalidade modelo : listaModalidades) {
+                mascaraItemLista.addElement(modelo);
+            }
+            lstModalidades.setModel(mascaraItemLista);
+        } catch (Exception e) {
+            System.out.println("Erro:: " + e.getMessage());
         }
-
-        lstModalidades.setModel(mascaraItemLista);
     }
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -58,6 +60,7 @@ public class TelaCasdastroModalidadeFinal extends javax.swing.JFrame {
         lblModalidades = new javax.swing.JLabel();
         btnEditar = new javax.swing.JButton();
         btnRemover = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -87,6 +90,13 @@ public class TelaCasdastroModalidadeFinal extends javax.swing.JFrame {
             }
         });
 
+        jButton1.setText("Remove todos");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -97,19 +107,21 @@ public class TelaCasdastroModalidadeFinal extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(lblModalidades)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jScrollPane1)
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnNovo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnEditar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnRemover, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(btnNovo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnEditar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnRemover, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                         .addGap(38, 38, 38))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(76, Short.MAX_VALUE)
+                .addContainerGap(66, Short.MAX_VALUE)
                 .addComponent(lblModalidades)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -122,14 +134,35 @@ public class TelaCasdastroModalidadeFinal extends javax.swing.JFrame {
                         .addComponent(btnEditar)
                         .addGap(18, 18, 18)
                         .addComponent(btnRemover)))
-                .addGap(72, 72, 72))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton1)
+                .addGap(47, 47, 47))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNovoActionPerformed
-        
+        // TODO add your handling code here:
+        String modDesc = JOptionPane.showInputDialog(rootPane, "Informe o nome da modalidade:", "Nova modalidade");
+
+        Modalidade mod = new Modalidade();
+
+        mod.setDescricao(modDesc);
+
+        jpa = new PersistenciaJPA();
+
+        if (jpa.conexaoAberta()) {
+            try {
+                jpa.persist(mod);
+            } catch (Exception ex) {
+                System.out.println("não foi possível adicionar ao banco" + ex.getMessage());
+            } finally {
+                jpa.fecharConexao();
+            }
+        }
+
+        atualizaLista();
     }//GEN-LAST:event_btnNovoActionPerformed
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
@@ -170,6 +203,26 @@ public class TelaCasdastroModalidadeFinal extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnRemoverActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        if (lstModalidades.getLastVisibleIndex() != -1) {
+            List<Modalidade> lstRemove = lstModalidades.getSelectedValuesList();
+
+            jpa = new PersistenciaJPA();
+
+            try {
+                jpa.conexaoAberta();
+                for (Modalidade m : lstRemove) {
+                    jpa.remover(m);
+                }
+                jpa.fecharConexao();
+                atualizaLista();
+            } catch (Exception e) {
+                System.out.println("Erro: " + e.getMessage());
+            }
+        }
+// TODO add your handling code here:
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -187,13 +240,13 @@ public class TelaCasdastroModalidadeFinal extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(TelaCasdastroModalidadeFinal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(TelaModalidade.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(TelaCasdastroModalidadeFinal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(TelaModalidade.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(TelaCasdastroModalidadeFinal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(TelaModalidade.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(TelaCasdastroModalidadeFinal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(TelaModalidade.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
         //</editor-fold>
@@ -203,7 +256,7 @@ public class TelaCasdastroModalidadeFinal extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new TelaCasdastroModalidadeFinal().setVisible(true);
+                new TelaModalidade().setVisible(true);
             }
         });
     }
@@ -212,6 +265,7 @@ public class TelaCasdastroModalidadeFinal extends javax.swing.JFrame {
     private javax.swing.JButton btnEditar;
     private javax.swing.JButton btnNovo;
     private javax.swing.JButton btnRemover;
+    private javax.swing.JButton jButton1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblModalidades;
     private javax.swing.JList<Modalidade> lstModalidades;
